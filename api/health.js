@@ -3,7 +3,7 @@
  * Reports MCP_PATH, SERVER_INFO and DATASET, and service readiness.
  */
 
-import { MCP_PATH, SERVER_INFO, DATASET, MCP_RESOURCE } from './_lib/mcp-server.js';
+import { MCP_PATH, SERVER_INFO, DATASET, MCP_RESOURCE } from './mcp.js';
 
 export { MCP_PATH, SERVER_INFO, DATASET, MCP_RESOURCE };
 

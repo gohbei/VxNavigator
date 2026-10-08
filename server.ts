@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import healthHandler from './api/health.js';
-import { mcpHandler, MCP_PATH, SERVER_INFO, DATASET, MCP_RESOURCE } from './api/_lib/mcp-server.js';
+import { mcpHandler, MCP_PATH, SERVER_INFO, DATASET, MCP_RESOURCE } from './api/mcp.js';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();

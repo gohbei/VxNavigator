@@ -18,7 +18,11 @@ Environment : built in Google AI Studio, versioned on Github, hosted on Vercel.
 
 You have to create folder for API as 
 
-Make api/mcp.js one line: `export { mcpHandler as default } from './_lib/mcp-server.js'`. In server.ts, add `app.use('/api', express.json({ limit: '1mb' }))`, then `app.all(['/api/mcp', '/api'], mcpHandler)`, importing it rather than copying it, above `app.use(vite.middlewares)` and above any catch-all route. Add an Express error handler for `/api` that turns a JSON parse failure into 400 with code -32700 and any other body error into 400 with code -32600, both as JSON-RPC, never as an HTML page. 
+Pull data from Resource Pubmed MCP server using the following endpoints:
+- store this in /api folder (in project root) not src file
+- Include a /mcp.js file within the same subfolder to check the connection of the server
+
+https://server.smithery.ai/pubmed
 
 Make api/health.js and the /api/health route in server.ts report MCP_PATH, SERVER_INFO and DATASET. Delete the old proxy code, the workers.dev address everywhere, MCP_SERVER_KEY and the fixed "mcp_latency_ms: 142".
 
@@ -48,14 +52,6 @@ Keep the supplied v1 and v2 hosts and paths. Validate actual response shapes per
 - https://isomer-user-content.by.gov.sg/18/abda18d6-75b8-4ce2-9085-58905e6e75b6/NAIS_Sept%202025.pdf
 
 URL scope is EXACT LISTED URLS ONLY. HealthHub's homepage does not authorise all HealthHub articles. Links inside approved pages do not automatically expand permission. Normalise harmless URL spelling differences without broadening paths or hosts. Block redirects to unapproved destinations and request approval for the exact destination. Record inaccessible, moved, or blocked sources honestly. Do not use unrelated pages to fill gaps.
-
-### MCP
-
-Resource : MCP endpoint https://mcp.smithery.ai/ggohbei and resource from https://server.smithery.ai/pubmed
-
-Use MCP service solely to retrieve PubMed research records. Discover the actual MCP tools, connection requirements, authentication, transport, and negotiated protocol. Do not invent tool names or claim a connection after merely configuring a URL. The exact service must successfully initialise, list tools, and complete a real research retrieval before showing a connected status. If setup cannot be verified, mark “Not configured” or “Unavailable” and request the necessary connection details. Never create a demo MCP server as a substitute or silently use another PubMed API.
-
-Research records returned by this approved MCP are in scope. Reference returned PMIDs, titles and publication metadata. Bibliographic PMID/DOI links may identify these retrieved records, but do not fetch publisher pages, other APIs or full text outside the approved service without owner approval. A PMID link is not proof the app read a paper. Distinguish abstract-only evidence from retrieved full text.
 
 ### Approved CSV
 The attached file is named:
@@ -144,7 +140,7 @@ Implement a structured answer contract with answer text, claims (claim ID, text,
 Reject unknown evidence IDs, mismatched source versions and unsupported numerical claims before rendering. Recheck semantic support for medical content. Deterministic eligibility/calculation results must not be rewritten by the model into stronger assertions. A disclaimer does not make an unsupported claim acceptable.
 
 ## 8. ARCHITECTURE, PRIVACY AND DEPLOYMENT
-Keep a single shared implementation per adapter/handler. If this actual project uses Vite+React with Express preview and Vercel deployment, register the same shared handlers in both environments rather than duplicating business logic. Place internal helpers outside public route exposure (for example api/_lib if supported). Preserve existing health endpoints instead of overwriting unrelated diagnostics. If the stack differs, use its native server routing.
+Keep a single shared implementation per adapter/handler. If this actual project uses Vite+React with Express preview and Vercel deployment, register the same shared handlers in both environments rather than duplicating business logic. Place internal helpers in `/api` (in project root) rather than `src/`. Preserve existing health endpoints instead of overwriting unrelated diagnostics. If the stack differs, use its native server routing.
 
 Keep Gemini and any MCP credentials in server-only environment variables. Never expose them in browser bundles, public VITE_ variables, code, comments, logs or diagnostic responses. Do not assume the PubMed service is keyless. Health diagnostics may report configured status, upstream status and sanitized errors, never credentials or patient data.
 
@@ -154,3 +150,10 @@ If an uploaded CSV contains identifiable patient records, stop that ingestion pa
 
 ## 9. REQUIRED VERIFICATION
 Ensure you check your work and verify before generating.
+
+## 10. WORKFLOW AND DELIVERY
+Start by producing a short project/source audit and identifying missing information. Ask targeted questions only where they affect correct integration or content. Continue independent layout and source-validation work while unresolved features remain unavailable. Do not silently expand the source boundary.
+
+Implement in stages: source registry and provenance; adapters and validation; official rule records; CSV population-context view; grounded assistant; Stitch UI; verification. Do not stop at a plan if implementation is possible. Do not publish or deploy until the owner requests it.
+
+Deliver the working implementation, changed-file summary, measured test results, integration status per source, unresolved gaps and exact setup requirements. Clearly separate “implemented and tested” from “configured but not verified” and “awaiting source/owner clarification”. Never describe this prompt alone as ensuring medical accuracy. Patient-facing clinical rules and high-stakes content require qualified clinical review before release.
