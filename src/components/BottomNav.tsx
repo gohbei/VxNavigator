@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Compass, Syringe, FileSpreadsheet } from 'lucide-react';
+import { Home, Compass, Syringe, Database } from 'lucide-react';
 import { ScreenTab } from '../types';
 
 interface BottomNavProps {
@@ -12,7 +12,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
     { id: 'home' as ScreenTab, label: 'Home', icon: Home },
     { id: 'guide' as ScreenTab, label: 'Guide Me', icon: Compass },
     { id: 'vaccines' as ScreenTab, label: 'Vaccines', icon: Syringe },
-    { id: 'evidence' as ScreenTab, label: 'Evidence', icon: FileSpreadsheet },
+    { id: 'evidence' as ScreenTab, label: 'Sources & APIs', icon: Database },
   ];
 
   return (

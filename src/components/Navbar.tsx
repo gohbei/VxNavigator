@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onTabChange, airQual
               <div className="flex items-center space-x-1.5 mt-0.5">
                 <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
-                  MOH & WHO Feed
+                  MOH NAIS Guidance
                 </span>
                 <span className="text-[10px] text-slate-600">
                   • NAIS 2025
