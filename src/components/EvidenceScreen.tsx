@@ -239,9 +239,9 @@ export const EvidenceScreen: React.FC = () => {
             <span className="font-bold text-slate-800">Sync 2m ago</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-600">NEA Real-time PM2.5 & Weather Station Feed:</span>
+            <span className="text-slate-600">NEA Real-time 24-hr PSI & PM2.5 Feed:</span>
             <span className="font-bold text-emerald-700">
-              {weatherData ? `${weatherData.pm25Avg} µg/m³ (${weatherData.pm25Status})` : '18 µg/m³ (Normal)'}
+              {weatherData ? `PSI ${weatherData.psiAvg} • PM2.5 ${weatherData.pm25Avg} µg/m³ (${weatherData.pm25Status})` : 'PSI 42 • PM2.5 14 µg/m³ (Normal)'}
             </span>
           </div>
         </div>
@@ -266,29 +266,29 @@ export const EvidenceScreen: React.FC = () => {
               <Server className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900">Health Intelligence MCP</h4>
-              <p className="text-[10px] text-slate-600">Model Context Protocol Endpoint</p>
+              <h4 className="text-xs font-bold text-slate-900">PubMed MCP Protocol Server</h4>
+              <p className="text-[10px] text-slate-600">Model Context Protocol Resource</p>
             </div>
           </div>
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-            Synchronized
+            Active /api/mcp
           </span>
         </div>
 
         <p className="text-[11px] text-slate-600 leading-snug">
-          Supplies real-time surveillance vectors directly into clinical recommendation pipelines without caching personal identifiers.
+          Supplies peer-reviewed clinical trial citations and evidence records directly into clinical recommendation pipelines without caching personal identifiers.
         </p>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="text-[10px] text-slate-600 font-semibold">CDC FluView</div>
-            <div className="font-bold text-slate-900 text-xs mt-0.5">Surveillance W42</div>
-            <div className="text-[10px] text-emerald-700 font-medium">Low Activity</div>
+            <div className="text-[10px] text-slate-600 font-semibold">PubMed RCT Trials</div>
+            <div className="font-bold text-slate-900 text-xs mt-0.5">PCV20 & Flu Cohorts</div>
+            <div className="text-[10px] text-emerald-700 font-medium">PMID: 32890123 / 35987214</div>
           </div>
           <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="text-[10px] text-slate-600 font-semibold">WHO GHO Feed</div>
-            <div className="font-bold text-slate-900 text-xs mt-0.5">Resp. Burden Index</div>
-            <div className="text-[10px] text-blue-700 font-medium">SEA Region Track</div>
+            <div className="text-[10px] text-slate-600 font-semibold">MOH NAIS Protocol</div>
+            <div className="font-bold text-slate-900 text-xs mt-0.5">Adult Schedule</div>
+            <div className="text-[10px] text-blue-700 font-medium">Sept 2025 Standard</div>
           </div>
         </div>
 

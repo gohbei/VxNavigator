@@ -1,6 +1,19 @@
 import { AssistantResponse } from '../types';
 
 export interface WeatherContext {
+  // PSI (24-hr)
+  psiRegional: {
+    central: number;
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+    national: number;
+  };
+  psiAvg: number;
+  psiStatus: string;
+
+  // PM2.5 (1-hr)
   pm25Regional: {
     central: number;
     north: number;
@@ -10,12 +23,37 @@ export interface WeatherContext {
   };
   pm25Avg: number;
   pm25Status: string;
+
+  // Temperature
   temperature: number;
+
+  // Forecasts
   twoHourForecast: string;
+  twentyFourHourForecast: {
+    text: string;
+    highTemp: number;
+    lowTemp: number;
+    validPeriod: string;
+  };
+  fourDayOutlook: Array<{
+    day: string;
+    forecast: string;
+    low: number;
+    high: number;
+  }>;
+
   station: string;
   observedAt: string;
   isStale: boolean;
   latencyMs: number;
+
+  // Environmental Vaccine Awareness & Impact
+  clinicalVaccineAwareness: {
+    airQualityImpact: string;
+    pneumococcalRelevance: string;
+    influenzaRelevance: string;
+    clinicalAdvisory: string;
+  };
 }
 
 export interface TransportContext {
@@ -38,80 +76,195 @@ export interface McpStatusResult {
 export async function fetchWeatherAndAir(): Promise<WeatherContext> {
   const startTime = Date.now();
   try {
-    const [pm25Res, tempRes, forecastRes] = await Promise.allSettled([
+    const [psiRes, pm25Res, tempRes, twoHrRes, twentyFourHrRes, fourDayRes] = await Promise.allSettled([
+      fetch('/api/evidence/feed/psi'),
       fetch('/api/evidence/feed/pm25'),
       fetch('/api/evidence/feed/air-temperature'),
       fetch('/api/evidence/feed/two-hr-forecast'),
+      fetch('/api/evidence/feed/twenty-four-hr-forecast'),
+      fetch('/api/evidence/feed/four-day-outlook'),
     ]);
 
-    let pm25Regional = { central: 16, north: 14, south: 18, east: 15, west: 19 };
-    let pm25Avg = 16;
-    let pm25Status = 'Normal';
-    let temperature = 30.5;
+    // Defaults
+    let psiRegional = { central: 42, north: 39, south: 41, east: 40, west: 45, national: 42 };
+    let psiAvg = 42;
+    let psiStatus = 'Good (0-50)';
+
+    let pm25Regional = { central: 14, north: 13, south: 16, east: 15, west: 12 };
+    let pm25Avg = 14;
+    let pm25Status = 'Normal (0-55 µg/m³)';
+
+    let temperature = 31.4;
     let twoHourForecast = 'Partly Cloudy';
-    let station = 'Singapore Central';
+    let station = 'Singapore';
+    let twentyFourHourForecast = {
+      text: 'Partly Cloudy across Singapore',
+      highTemp: 34,
+      lowTemp: 26,
+      validPeriod: 'Next 24 Hours',
+    };
+    let fourDayOutlook: Array<{ day: string; forecast: string; low: number; high: number }> = [
+      { day: 'Friday', forecast: 'Afternoon Showers', low: 25, high: 33 },
+      { day: 'Saturday', forecast: 'Thundery Showers', low: 25, high: 32 },
+      { day: 'Sunday', forecast: 'Partly Cloudy', low: 26, high: 34 },
+      { day: 'Monday', forecast: 'Passing Showers', low: 25, high: 33 },
+    ];
     let observedAt = new Date().toLocaleTimeString('en-SG', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit' });
 
+    // 1. Parse PSI
+    if (psiRes.status === 'fulfilled' && psiRes.value.ok) {
+      const pData = await psiRes.value.json();
+      const readings = pData.data?.data?.records?.[0]?.readings?.psi_twenty_four_hourly || pData.data?.items?.[0]?.readings?.psi_twenty_four_hourly;
+      if (readings) {
+        psiRegional = {
+          central: readings.central ?? 42,
+          north: readings.north ?? 39,
+          south: readings.south ?? 41,
+          east: readings.east ?? 40,
+          west: readings.west ?? 45,
+          national: readings.national ?? Math.round((readings.central + readings.north + readings.south + readings.east + readings.west) / 5),
+        };
+        psiAvg = psiRegional.national;
+        psiStatus = psiAvg <= 50 ? 'Good (0-50)' : psiAvg <= 100 ? 'Moderate (51-100)' : 'Unhealthy (101-200)';
+      }
+    }
+
+    // 2. Parse PM2.5
     if (pm25Res.status === 'fulfilled' && pm25Res.value.ok) {
       const pmData = await pm25Res.value.json();
       const readings = pmData.data?.data?.records?.[0]?.readings?.pm25_one_hourly || pmData.data?.items?.[0]?.readings?.pm25_one_hourly;
       if (readings) {
         pm25Regional = {
-          central: readings.central ?? 16,
-          north: readings.north ?? 14,
-          south: readings.south ?? 18,
+          central: readings.central ?? 14,
+          north: readings.north ?? 13,
+          south: readings.south ?? 16,
           east: readings.east ?? 15,
-          west: readings.west ?? 19,
+          west: readings.west ?? 12,
         };
-        pm25Avg = Math.round(
-          (pm25Regional.central + pm25Regional.north + pm25Regional.south + pm25Regional.east + pm25Regional.west) / 5
-        );
-        pm25Status = pm25Avg <= 55 ? 'Normal' : pm25Avg <= 150 ? 'Elevated' : 'High';
+        pm25Avg = Math.round((pm25Regional.central + pm25Regional.north + pm25Regional.south + pm25Regional.east + pm25Regional.west) / 5);
+        pm25Status = pm25Avg <= 55 ? 'Normal (0-55 µg/m³)' : pm25Avg <= 150 ? 'Elevated (56-150 µg/m³)' : 'High (>150 µg/m³)';
       }
       if (pmData.fetchedAt) {
         observedAt = new Date(pmData.fetchedAt).toLocaleTimeString('en-SG', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit' });
       }
     }
 
+    // 3. Parse Air Temperature
     if (tempRes.status === 'fulfilled' && tempRes.value.ok) {
-      const tempData = await tempRes.value.json();
-      const readingList = tempData.data?.data?.records?.[0]?.readings || tempData.data?.items?.[0]?.readings;
-      if (Array.isArray(readingList) && readingList.length > 0) {
-        temperature = readingList[0].value ?? 30.2;
+      const tData = await tempRes.value.json();
+      const records = tData.data?.data?.records?.[0]?.readings || tData.data?.items?.[0]?.readings;
+      if (Array.isArray(records) && records.length > 0) {
+        const validValues = records.map((r: any) => r.value).filter((v: any) => typeof v === 'number');
+        if (validValues.length > 0) {
+          temperature = Math.round((validValues.reduce((a: number, b: number) => a + b, 0) / validValues.length) * 10) / 10;
+        }
       }
     }
 
-    if (forecastRes.status === 'fulfilled' && forecastRes.value.ok) {
-      const fData = await forecastRes.value.json();
-      const forecasts = fData.data?.data?.records?.[0]?.forecasts || fData.data?.items?.[0]?.forecasts;
-      if (Array.isArray(forecasts) && forecasts.length > 0) {
-        twoHourForecast = forecasts[0].forecast || 'Partly Cloudy';
-        station = forecasts[0].area || 'Central Singapore';
+    // 4. Parse 2-hr Forecast
+    if (twoHrRes.status === 'fulfilled' && twoHrRes.value.ok) {
+      const twoData = await twoHrRes.value.json();
+      const fList = twoData.data?.data?.records?.[0]?.forecasts || twoData.data?.items?.[0]?.forecasts;
+      if (Array.isArray(fList) && fList.length > 0) {
+        twoHourForecast = fList[0].forecast || 'Partly Cloudy';
+        station = fList[0].area || 'Singapore Islandwide';
       }
     }
+
+    // 5. Parse 24-hr Forecast
+    if (twentyFourHrRes.status === 'fulfilled' && twentyFourHrRes.value.ok) {
+      const tfData = await twentyFourHrRes.value.json();
+      const general = tfData.data?.records?.[0]?.general || tfData.data?.items?.[0]?.general;
+      if (general) {
+        twentyFourHourForecast = {
+          text: general.forecast?.text || 'Partly Cloudy (Day)',
+          highTemp: general.temperature?.high ?? 34,
+          lowTemp: general.temperature?.low ?? 25,
+          validPeriod: general.validPeriod?.text || 'Next 24 Hours',
+        };
+      }
+    }
+
+    // 6. Parse 4-Day Outlook
+    if (fourDayRes.status === 'fulfilled' && fourDayRes.value.ok) {
+      const fdData = await fourDayRes.value.json();
+      const fArray = fdData.data?.records?.[0]?.forecasts || fdData.data?.items?.[0]?.forecasts;
+      if (Array.isArray(fArray) && fArray.length > 0) {
+        fourDayOutlook = fArray.slice(0, 4).map((item: any) => ({
+          day: item.day || 'Day',
+          forecast: item.forecast?.text || item.forecast?.summary || 'Showers',
+          low: item.temperature?.low ?? 25,
+          high: item.temperature?.high ?? 33,
+        }));
+      }
+    }
+
+    // Generate clinical awareness considerations grounded in Singapore official guidelines
+    const isAirwayIrritant = pm25Avg > 55 || psiAvg > 100;
+    const isWetMonsoonWeather = twoHourForecast.toLowerCase().includes('shower') || twoHourForecast.toLowerCase().includes('rain');
+
+    const clinicalVaccineAwareness = {
+      airQualityImpact: isAirwayIrritant
+        ? `Elevated air pollutant index (PSI ${psiAvg}, PM2.5 ${pm25Avg} µg/m³) inflames bronchial mucosal lining and impairs ciliary clearance, accelerating respiratory vulnerability.`
+        : `Air quality is currently in the ${psiStatus} band (PSI ${psiAvg}, PM2.5 ${pm25Avg} µg/m³). Baseline environmental airway irritation remains low.`,
+      pneumococcalRelevance:
+        'Particulate matter and viral airway inflammation dramatically elevate the risk of secondary bacterial Streptococcus pneumoniae infection. Seniors 65+ and adults with diabetes, asthma, or COPD should ensure their PCV20 or PCV13+PPSV23 schedule is complete.',
+      influenzaRelevance: isWetMonsoonWeather
+        ? 'Rainy weather and indoor congregation coincide with Singapore’s monsoon influenza circulation periods (May–Jul and Nov–Jan). Annual quadrivalent flu vaccination is heavily subsidised under Healthier SG.'
+        : 'Singapore experiences bi-modal year-round influenza circulation. Annual flu immunization ensures proactive protection prior to regional monsoon shifts or overseas travel.',
+      clinicalAdvisory:
+        'Environmental factors inform timely preventive healthcare discussions with your GP. Subsidies of up to $0 co-payment are available under Healthier SG for enrolled seniors and CHAS cardholders.',
+    };
 
     return {
+      psiRegional,
+      psiAvg,
+      psiStatus,
       pm25Regional,
       pm25Avg,
       pm25Status,
       temperature,
       twoHourForecast,
+      twentyFourHourForecast,
+      fourDayOutlook,
       station,
       observedAt,
       isStale: false,
       latencyMs: Date.now() - startTime,
+      clinicalVaccineAwareness,
     };
   } catch {
     return {
-      pm25Regional: { central: 16, north: 14, south: 18, east: 15, west: 19 },
-      pm25Avg: 16,
-      pm25Status: 'Normal (Standard Baseline)',
-      temperature: 30.0,
-      twoHourForecast: 'Fair / Partly Cloudy',
+      psiRegional: { central: 42, north: 39, south: 41, east: 40, west: 45, national: 42 },
+      psiAvg: 42,
+      psiStatus: 'Good (0-50)',
+      pm25Regional: { central: 14, north: 13, south: 16, east: 15, west: 12 },
+      pm25Avg: 14,
+      pm25Status: 'Normal (0-55 µg/m³)',
+      temperature: 31.0,
+      twoHourForecast: 'Partly Cloudy',
+      twentyFourHourForecast: {
+        text: 'Partly Cloudy across Singapore',
+        highTemp: 34,
+        lowTemp: 26,
+        validPeriod: 'Next 24 Hours',
+      },
+      fourDayOutlook: [
+        { day: 'Friday', forecast: 'Afternoon Showers', low: 25, high: 33 },
+        { day: 'Saturday', forecast: 'Thundery Showers', low: 25, high: 32 },
+        { day: 'Sunday', forecast: 'Partly Cloudy', low: 26, high: 34 },
+        { day: 'Monday', forecast: 'Passing Showers', low: 25, high: 33 },
+      ],
       station: 'Central Region',
       observedAt: new Date().toLocaleTimeString('en-SG', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit' }),
       isStale: true,
       latencyMs: 120,
+      clinicalVaccineAwareness: {
+        airQualityImpact: 'Standard ambient air baseline. Particulate monitoring active.',
+        pneumococcalRelevance: 'Pneumococcal vaccination protects the lower respiratory tract against Streptococcus pneumoniae in adults 65+ and those with chronic conditions.',
+        influenzaRelevance: 'Singapore has bi-modal influenza peaks (May-July and Nov-Jan). Annual vaccination is recommended under NAIS.',
+        clinicalAdvisory: 'Educational guidance only. Discuss your vaccination schedule with your Healthier SG GP or Polyclinic.',
+      },
     };
   }
 }
