@@ -1,0 +1,186 @@
+import { CSVRowRecord } from '../types';
+
+export const RAW_CSV_TEXT = `DataSeries,2023,2021,2019,2007,2022,2020,2017,2013,2010
+Crude - Total - Diabetes Mellitus,8.5,6.9,8.8,8.2,7.3,7.9,8.6,8.6,8.3
+Crude - Male - Diabetes Mellitus,9.3,8.0,10.0,8.9,8.2,8.8,9.6,9.5,8.8
+Crude - Female - Diabetes Mellitus,7.7,5.9,7.6,7.5,6.4,7.0,7.7,7.7,7.8
+Age-standardised - Total - Diabetes Mellitus,6.5,5.6,6.9,8.2,5.7,6.3,6.8,7.3,7.5
+Age-standardised - Male - Diabetes Mellitus,7.4,6.7,7.9,8.9,6.7,7.1,7.9,8.2,8.1
+Age-standardised - Female - Diabetes Mellitus,5.7,4.6,5.9,7.5,4.8,5.4,5.8,6.4,6.9
+Crude - Total - Hypertension,33.4,31.7,31.7,24.9,31.3,31.9,24.2,23.5,23.5
+Crude - Male - Hypertension,37.1,34.8,35.4,26.9,34.4,35.7,26.4,26.2,25.4
+Crude - Female - Hypertension,29.8,28.8,28.1,23.0,28.3,28.3,22.0,20.8,21.6
+Age-standardised - Total - Hypertension,24.4,24.2,23.9,24.9,23.8,24.6,18.7,18.9,20.0
+Age-standardised - Male - Hypertension,28.8,28.0,28.2,26.9,27.3,29.1,21.2,22.0,22.3
+Age-standardised - Female - Hypertension,20.4,20.7,19.9,23.0,20.5,20.3,16.4,16.0,17.8
+Crude - Total - Hyperlipidaemia,34.1,31.9,39.1,26.2,30.7,35.5,33.6,26.2,30.3
+Crude - Male - Hyperlipidaemia,37.3,35.6,42.5,28.6,34.4,39.0,37.1,29.3,33.5
+Crude - Female - Hyperlipidaemia,31.0,28.4,35.8,23.8,27.1,32.2,30.2,23.2,27.2
+Age-standardised - Total - Hyperlipidaemia,26.8,26.3,30.8,26.2,24.8,29.0,27.4,22.5,27.3
+Age-standardised - Male - Hyperlipidaemia,31.0,30.6,35.0,28.6,28.7,33.1,31.3,25.8,30.7
+Age-standardised - Female - Hyperlipidaemia,22.9,22.3,26.9,23.8,21.0,25.1,23.7,19.3,24.0
+Crude - Total - Overweight (Excluding Obese),31.3,30.1,29.0,26.3,29.5,28.8,26.2,25.4,25.7
+Crude - Total - Obesity,11.6,11.6,10.5,6.9,11.6,10.5,8.9,8.6,10.7
+Crude - Total - Daily Smoking,8.8,10.4,10.6,13.6,9.2,10.1,12.0,13.3,14.3
+Crude - Male - Daily Smoking,15.6,18.3,18.7,23.7,16.3,17.8,21.1,23.1,24.6
+Crude - Female - Daily Smoking,2.3,3.0,2.8,3.9,2.4,2.8,3.4,4.0,4.2
+Crude - Total - Sufficient Total Physical Activity,75.0,71.1,79.9,na,74.9,76.5,80.7,na,na
+Crude - Male - Sufficient Total Physical Activity,77.7,73.5,81.5,na,77.5,78.8,82.4,na,na
+Crude - Female - Sufficient Total Physical Activity,72.4,68.9,78.3,na,72.4,74.3,79.1,na,na
+Crude - Total - Binge Drinking,9.6,9.6,10.2,na,10.5,10.5,9.9,na,na`;
+
+export interface ParseResult {
+  valid: boolean;
+  rows: CSVRowRecord[];
+  yearsSorted: string[];
+  errors: string[];
+  metadata: {
+    rowCount: number;
+    filename: string;
+    targetPopulation: string;
+    columns: string[];
+  };
+}
+
+export function parseHealthSurveyCSV(csvContent: string): ParseResult {
+  const errors: string[] = [];
+  // Strip BOM if present
+  let cleanContent = csvContent;
+  if (cleanContent.charCodeAt(0) === 0xfeff) {
+    cleanContent = cleanContent.slice(1);
+  }
+
+  const rawLines = cleanContent
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+
+  if (rawLines.length < 2) {
+    return {
+      valid: false,
+      rows: [],
+      yearsSorted: [],
+      errors: ['File contains insufficient rows. Expected header + 27 data rows.'],
+      metadata: { rowCount: 0, filename: '', targetPopulation: '', columns: [] },
+    };
+  }
+
+  // Parse header with quote support
+  const parseRow = (line: string): string[] => {
+    const result: string[] = [];
+    let insideQuote = false;
+    let current = '';
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (insideQuote && line[i + 1] === '"') {
+          current += '"';
+          i++; // Skip escaped quote
+        } else {
+          insideQuote = !insideQuote;
+        }
+      } else if (char === ',' && !insideQuote) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const header = parseRow(rawLines[0]);
+  if (header[0] !== 'DataSeries') {
+    errors.push(`Invalid first column header: "${header[0]}". Expected "DataSeries".`);
+  }
+
+  const yearColumns = header.slice(1);
+  const yearsSorted = [...yearColumns].sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+  const seenSeries = new Set<string>();
+  const parsedRecords: CSVRowRecord[] = [];
+
+  for (let r = 1; r < rawLines.length; r++) {
+    const line = rawLines[r];
+    const cells = parseRow(line);
+
+    if (cells.length !== header.length) {
+      errors.push(`Row ${r + 1} has ${cells.length} columns, expected ${header.length}.`);
+      continue;
+    }
+
+    const seriesName = cells[0];
+    if (seenSeries.has(seriesName)) {
+      errors.push(`Duplicate data series found: "${seriesName}" at row ${r + 1}.`);
+    }
+    seenSeries.add(seriesName);
+
+    const yearlyValues: Record<string, number | null> = {};
+    for (let c = 1; c < cells.length; c++) {
+      const year = header[c];
+      const valStr = cells[c].toLowerCase();
+
+      if (valStr === 'na' || valStr === '' || valStr === 'null') {
+        yearlyValues[year] = null;
+      } else {
+        const num = parseFloat(valStr);
+        if (isNaN(num)) {
+          yearlyValues[year] = null;
+          errors.push(`Invalid non-numeric value "${cells[c]}" in row ${r + 1}, column "${year}".`);
+        } else {
+          yearlyValues[year] = num;
+        }
+      }
+    }
+
+    // Select latest non-null year numerically
+    let latestYear = '';
+    let latestValue: number | null = null;
+    let baselineYear = '';
+    let baselineValue: number | null = null;
+
+    for (const yr of yearsSorted) {
+      const v = yearlyValues[yr];
+      if (v !== null && v !== undefined) {
+        if (!baselineYear) {
+          baselineYear = yr;
+          baselineValue = v;
+        }
+        latestYear = yr;
+        latestValue = v;
+      }
+    }
+
+    let percentagePointChange: number | null = null;
+    if (baselineValue !== null && latestValue !== null) {
+      percentagePointChange = Math.round((latestValue - baselineValue) * 10) / 10;
+    }
+
+    parsedRecords.push({
+      dataSeries: seriesName,
+      yearlyValues,
+      latestYear,
+      latestValue,
+      baselineYear,
+      baselineValue,
+      percentagePointChange,
+    });
+  }
+
+  return {
+    valid: errors.length === 0,
+    rows: parsedRecords,
+    yearsSorted,
+    errors,
+    metadata: {
+      rowCount: parsedRecords.length,
+      filename: 'PrevalenceOfOverweightObesityDailySmokingHypertensionDiabetesMellitusHyperlipidaemiaSufficientTotalPhysicalActivityAndBingeDrinkingAmongResidentsAged1874Years(1).csv',
+      targetPopulation: 'Singapore Residents Aged 18-74 Years',
+      columns: header,
+    },
+  };
+}
+
+export const INITIAL_POPULATION_DATA = parseHealthSurveyCSV(RAW_CSV_TEXT);

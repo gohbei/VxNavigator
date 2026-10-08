@@ -1,0 +1,6 @@
+{
+  "name": "My Vaccine Guide SG",
+  "description": "Evidence-grounded adult vaccination education and patient awareness guide for Singapore, aligning with NAIS guidelines and verified public health sources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
