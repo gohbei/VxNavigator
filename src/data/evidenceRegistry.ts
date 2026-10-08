@@ -60,7 +60,7 @@ export const APPROVED_SOURCES: EvidenceSource[] = [
     approvedUrl: 'https://mcp.smithery.ai/ggohbei',
     category: 'research_mcp',
     publisher: 'Smithery / PubMed Research Interface',
-    locator: 'Endpoint: server.smithery.ai/pubmed',
+    locator: 'Endpoint: https://mcp.smithery.ai/ggohbei | Resource: https://server.smithery.ai/pubmed',
     excerpt: 'Standardized research retrieval layer for peer-reviewed PubMed citations and clinical trial abstracts.',
     status: 'active',
   },

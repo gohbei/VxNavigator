@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import healthHandler from './api/health.js';
-import { mcpHandler, MCP_PATH, SERVER_INFO, DATASET } from './api/_lib/mcp-server.js';
+import { mcpHandler, MCP_PATH, SERVER_INFO, DATASET, MCP_ENDPOINT, MCP_RESOURCE } from './api/_lib/mcp-server.js';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
@@ -154,8 +154,8 @@ app.get('/api/evidence/feed/:sourceId', async (req: Request, res: Response) => {
 
 // PubMed MCP Status Check
 app.get('/api/evidence/mcp/status', async (req: Request, res: Response) => {
-  const mcpEndpoint = 'https://mcp.smithery.ai/ggohbei';
-  const resourceEndpoint = 'https://server.smithery.ai/pubmed';
+  const mcpEndpoint = MCP_ENDPOINT;
+  const resourceEndpoint = MCP_RESOURCE;
 
   const startTime = Date.now();
   try {

@@ -3,9 +3,9 @@
  * Reports MCP_PATH, SERVER_INFO and DATASET, and service readiness.
  */
 
-import { MCP_PATH, SERVER_INFO, DATASET } from './_lib/mcp-server.js';
+import { MCP_PATH, SERVER_INFO, DATASET, MCP_ENDPOINT, MCP_RESOURCE } from './_lib/mcp-server.js';
 
-export { MCP_PATH, SERVER_INFO, DATASET };
+export { MCP_PATH, SERVER_INFO, DATASET, MCP_ENDPOINT, MCP_RESOURCE };
 
 export default async function handler(req, res) {
   const ltaKey = process.env.LTA_API_KEY || process.env.LTA_KEY || process.env.DATAMALL_KEY || '';
@@ -46,6 +46,8 @@ export default async function handler(req, res) {
     timestamp: new Date().toISOString(),
     service: 'My Vaccine Guide SG Diagnostic',
     MCP_PATH,
+    MCP_ENDPOINT,
+    MCP_RESOURCE,
     SERVER_INFO,
     DATASET,
     keyConfigured,
