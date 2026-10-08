@@ -1,28 +1,28 @@
 DataSeries,2023,2021,2019,2007,2022,2020,2017,2013,2010
-Crude - Total - Diabetes Mellitus,8.5,6.9,8.8,8.2,7.3,7.9,8.6,8.6,8.3
-Crude - Male - Diabetes Mellitus,9.3,8.0,10.0,8.9,8.2,8.8,9.6,9.5,8.8
-Crude - Female - Diabetes Mellitus,7.7,5.9,7.6,7.5,6.4,7.0,7.7,7.7,7.8
-Age-standardised - Total - Diabetes Mellitus,6.5,5.6,6.9,8.2,5.7,6.3,6.8,7.3,7.5
-Age-standardised - Male - Diabetes Mellitus,7.4,6.7,7.9,8.9,6.7,7.1,7.9,8.2,8.1
-Age-standardised - Female - Diabetes Mellitus,5.7,4.6,5.9,7.5,4.8,5.4,5.8,6.4,6.9
-Crude - Total - Hypertension,33.4,31.7,31.7,24.9,31.3,31.9,24.2,23.5,23.5
-Crude - Male - Hypertension,37.1,34.8,35.4,26.9,34.4,35.7,26.4,26.2,25.4
-Crude - Female - Hypertension,29.8,28.8,28.1,23.0,28.3,28.3,22.0,20.8,21.6
-Age-standardised - Total - Hypertension,24.4,24.2,23.9,24.9,23.8,24.6,18.7,18.9,20.0
-Age-standardised - Male - Hypertension,28.8,28.0,28.2,26.9,27.3,29.1,21.2,22.0,22.3
-Age-standardised - Female - Hypertension,20.4,20.7,19.9,23.0,20.5,20.3,16.4,16.0,17.8
-Crude - Total - Hyperlipidaemia,34.1,31.9,39.1,26.2,30.7,35.5,33.6,26.2,30.3
-Crude - Male - Hyperlipidaemia,37.3,35.6,42.5,28.6,34.4,39.0,37.1,29.3,33.5
-Crude - Female - Hyperlipidaemia,31.0,28.4,35.8,23.8,27.1,32.2,30.2,23.2,27.2
-Age-standardised - Total - Hyperlipidaemia,26.8,26.3,30.8,26.2,24.8,29.0,27.4,22.5,27.3
-Age-standardised - Male - Hyperlipidaemia,31.0,30.6,35.0,28.6,28.7,33.1,31.3,25.8,30.7
-Age-standardised - Female - Hyperlipidaemia,22.9,22.3,26.9,23.8,21.0,25.1,23.7,19.3,24.0
-Crude - Total - Overweight (Excluding Obese),31.3,30.1,29.0,26.3,29.5,28.8,26.2,25.4,25.7
-Crude - Total - Obesity,11.6,11.6,10.5,6.9,11.6,10.5,8.9,8.6,10.7
-Crude - Total - Daily Smoking,8.8,10.4,10.6,13.6,9.2,10.1,12.0,13.3,14.3
-Crude - Male - Daily Smoking,15.6,18.3,18.7,23.7,16.3,17.8,21.1,23.1,24.6
-Crude - Female - Daily Smoking,2.3,3.0,2.8,3.9,2.4,2.8,3.4,4.0,4.2
-Crude - Total - Sufficient Total Physical Activity,75.0,71.1,79.9,na,74.9,76.5,80.7,na,na
-Crude - Male - Sufficient Total Physical Activity,77.7,73.5,81.5,na,77.5,78.8,82.4,na,na
-Crude - Female - Sufficient Total Physical Activity,72.4,68.9,78.3,na,72.4,74.3,79.1,na,na
-Crude - Total - Binge Drinking,9.6,9.6,10.2,na,10.5,10.5,9.9,na,na
+Overweight (Excluding Obese) - Total,na,na,na,na,28.6,28.8,27.5,25.7,29.8
+Obese - Total,na,na,na,na,11.6,10.5,8.6,8.6,10.5
+Daily Smoking - Total,8.8,10.4,10.6,13.3,9.2,10.1,11.8,13.1,13.9
+Diabetes Mellitus - Total,na,na,na,na,8.5,9.5,8.8,na,8.6
+Hypertension - Total,na,na,na,na,37,35.5,24.2,na,19.8
+Hyperlipidaemia - Total,na,na,na,na,31.9,39.1,35.5,na,26.2
+Sufficient Total Physical Activity - Total,78.5,76,84.6,85.4,74.9,80.6,84,79.5,na
+Binge Drinking - Total,10.3,9.6,10.2,4.3,9.4,10.5,8.8,7.4,na
+Proportion Of Singapore Residents Who Were Screened For Chronic Diseases According To The Recommended Frequency - Total,62.6,59.2,66.3,58.1,60.3,63,66.4,56,45.2
+Overweight (Excluding Obese) - Male,na,na,na,na,33.4,33.5,36.2,30.8,35.1
+Obese - Male,na,na,na,na,13.1,11.9,7,9.4,11.7
+Daily Smoking - Male,15.7,17.8,18.4,23.1,16,17,20.6,23,24
+Diabetes Mellitus - Male,na,na,na,na,9.7,10.6,10.3,na,9.2
+Hypertension - Male,na,na,na,na,44,41,27,na,22
+Hyperlipidaemia - Male,na,na,na,na,36.2,42.8,42.8,na,28.8
+Sufficient Total Physical Activity - Male,80,78.1,85.6,85.2,76.7,80.4,84.6,82.5,na
+Binge Drinking - Male,13.7,13.8,14.9,6.4,13.1,14.6,13.1,10.7,na
+Proportion Of Singapore Residents Who Were Screened For Chronic Diseases According To The Recommended Frequency - Male,61.9,61.3,67.5,59.9,59.2,63.9,65.9,55,47.8
+Overweight (Excluding Obese) - Female,na,na,na,na,23.9,24.3,19.2,20.7,24.6
+Obese - Female,na,na,na,na,10.2,9.3,10,7.8,9.4
+Daily Smoking - Female,2.3,3.3,3.2,3.8,2.7,3.4,3.3,3.6,4.1
+Diabetes Mellitus - Female,na,na,na,na,7.3,8.4,7.4,na,8
+Hypertension - Female,na,na,na,na,30.2,30.2,21.7,na,17.6
+Hyperlipidaemia - Female,na,na,na,na,27.9,35.8,28.5,na,23.6
+Sufficient Total Physical Activity - Female,76.9,74.1,83.6,85.7,73.2,80.7,83.5,76.6,na
+Binge Drinking - Female,7.1,5.6,5.7,2.2,5.7,6.5,4.7,4.2,na
+Proportion Of Singapore Residents Who Were Screened For Chronic Diseases According To The Recommended Frequency - Female,63.3,57.5,65.2,56.4,61.1,62.2,66.8,56.9,42.8

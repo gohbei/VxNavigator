@@ -32,7 +32,7 @@ export const EvidenceScreen: React.FC = () => {
 
   // CSV Data State
   const [populationData, setPopulationData] = useState(INITIAL_POPULATION_DATA);
-  const [selectedSeriesCategory, setSelectedSeriesCategory] = useState<'all' | 'diabetes' | 'hypertension' | 'hyperlipidaemia' | 'lifestyle'>('all');
+  const [selectedSeriesCategory, setSelectedSeriesCategory] = useState<'all' | 'diabetes' | 'hypertension' | 'hyperlipidaemia' | 'lifestyle' | 'screening'>('all');
   const [csvUploadModalOpen, setCsvUploadModalOpen] = useState(false);
   const [schemaModalOpen, setSchemaModalOpen] = useState(false);
   const [mcpInspectModalOpen, setMcpInspectModalOpen] = useState(false);
@@ -68,10 +68,12 @@ export const EvidenceScreen: React.FC = () => {
     if (selectedSeriesCategory === 'diabetes') return s.includes('diabetes');
     if (selectedSeriesCategory === 'hypertension') return s.includes('hypertension');
     if (selectedSeriesCategory === 'hyperlipidaemia') return s.includes('hyperlipidaemia');
+    if (selectedSeriesCategory === 'screening') return s.includes('screened');
     if (selectedSeriesCategory === 'lifestyle') {
       return (
         s.includes('smoking') ||
-        s.includes('obesity') ||
+        s.includes('obese') ||
+        s.includes('overweight') ||
         s.includes('physical activity') ||
         s.includes('drinking')
       );
@@ -420,7 +422,8 @@ export const EvidenceScreen: React.FC = () => {
             { id: 'diabetes', label: 'Diabetes' },
             { id: 'hypertension', label: 'Hypertension' },
             { id: 'hyperlipidaemia', label: 'Hyperlipidaemia' },
-            { id: 'lifestyle', label: 'Lifestyle / Smoking' },
+            { id: 'screening', label: 'Chronic Screening' },
+            { id: 'lifestyle', label: 'Lifestyle / Obesity / Smoking' },
           ].map((cat) => (
             <button
               key={cat.id}

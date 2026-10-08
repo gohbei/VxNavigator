@@ -1,9 +1,10 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import healthHandler from './api/health.js';
+import { mcpHandler, MCP_PATH, SERVER_INFO, DATASET } from './api/_lib/mcp-server.js';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
@@ -14,6 +15,31 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
+// JSON parser for API routes limited to 1MB
+app.use('/api', express.json({ limit: '1mb' }));
+
+// MCP Handler on /api/mcp and /api
+app.all(['/api/mcp', '/api'], mcpHandler);
+
+// Express error handler for /api that turns JSON parse error into -32700 and body errors into -32600 as JSON-RPC
+app.use('/api', (err: unknown, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    const isParseError = err instanceof SyntaxError && 'body' in err;
+    const errorCode = isParseError ? -32700 : -32600;
+    const errorMessage = isParseError ? 'Parse error' : 'Invalid Request';
+    return res.status(400).json({
+      jsonrpc: '2.0',
+      error: {
+        code: errorCode,
+        message: errorMessage,
+      },
+      id: null,
+    });
+  }
+  next();
+});
+
+// General JSON parser for other routes
 app.use(express.json({ limit: '10mb' }));
 
 // 1. Strict Source Registry URLs Allowlist
@@ -41,7 +67,7 @@ const APPROVED_URLS: Record<string, string> = {
 const memoryCache: Record<string, { data: unknown; fetchedAt: number; ttl: number; status: number }> = {};
 
 // Diagnostics / Health Endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+app.all('/api/health', (req: Request, res: Response) => {
   return healthHandler(req, res);
 });
 
