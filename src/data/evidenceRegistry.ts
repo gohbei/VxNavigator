@@ -57,10 +57,10 @@ export const APPROVED_SOURCES: EvidenceSource[] = [
   {
     id: 'PUBMED-MCP-SERVICE',
     title: 'PubMed Model Context Protocol (MCP) Service',
-    approvedUrl: 'https://mcp.smithery.ai/ggohbei',
+    approvedUrl: 'https://server.smithery.ai/pubmed',
     category: 'research_mcp',
     publisher: 'Smithery / PubMed Research Interface',
-    locator: 'Endpoint: https://mcp.smithery.ai/ggohbei | Resource: https://server.smithery.ai/pubmed',
+    locator: 'Resource: https://server.smithery.ai/pubmed',
     excerpt: 'Standardized research retrieval layer for peer-reviewed PubMed citations and clinical trial abstracts.',
     status: 'active',
   },

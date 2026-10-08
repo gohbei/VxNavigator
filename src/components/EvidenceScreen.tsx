@@ -710,8 +710,8 @@ export const EvidenceScreen: React.FC = () => {
             </div>
             <div className="space-y-2 text-xs text-slate-600">
               <div className="p-2.5 bg-slate-50 rounded-xl space-y-1">
-                <div className="font-bold text-slate-900">Endpoint:</div>
-                <div className="font-mono text-[10px] text-blue-700">https://mcp.smithery.ai/ggohbei</div>
+                <div className="font-bold text-slate-900">Local MCP Path:</div>
+                <div className="font-mono text-[10px] text-blue-700">/api/mcp</div>
               </div>
               <div className="p-2.5 bg-slate-50 rounded-xl space-y-1">
                 <div className="font-bold text-slate-900">Resource:</div>

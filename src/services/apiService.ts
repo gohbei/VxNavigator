@@ -164,11 +164,11 @@ export async function fetchMcpStatus(): Promise<McpStatusResult> {
     // Return honest fallback
   }
   return {
-    configured: true,
-    endpoint: 'https://mcp.smithery.ai/ggohbei',
+    configured: false,
+    endpoint: '',
     resource: 'https://server.smithery.ai/pubmed',
     upstreamStatus: 503,
-    latencyMs: 85,
+    latencyMs: 0,
     verified: false,
     note: 'MCP protocol discovery active. Awaiting verified handshake credentials.',
   };

@@ -3,7 +3,6 @@
  * Protocol: Model Context Protocol (JSON-RPC 2.0)
  */
 
-export const MCP_ENDPOINT = 'https://mcp.smithery.ai/ggohbei';
 export const MCP_RESOURCE = 'https://server.smithery.ai/pubmed';
 export const MCP_PATH = '/api/mcp';
 
@@ -11,7 +10,6 @@ export const SERVER_INFO = {
   name: 'My Vaccine Guide SG MCP Server',
   version: '1.0.0',
   protocolVersion: '2024-11-05',
-  mcpEndpoint: MCP_ENDPOINT,
   resource: MCP_RESOURCE,
 };
 
